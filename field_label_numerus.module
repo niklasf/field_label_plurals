@@ -1,6 +1,12 @@
 <?php
 
 /**
+ * @file
+ * Alter the field settings form to add a textfield for the plural and use
+ * those settings when preprocessing fields.
+ */
+
+/**
  * Add a textfield to the field instance settings form.
  *
  * Implements hook_form_FORM_ID_alter().
