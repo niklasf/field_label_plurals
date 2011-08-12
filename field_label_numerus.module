@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Alter the field settings form to add a textfield for the plural and use
+ * Alter the field settings form to add a textfield for the singular and use
  * those settings when preprocessing fields.
  */
 
@@ -19,33 +19,33 @@ function field_label_numerus_form_field_ui_field_edit_form_alter(&$form, $form_s
     $cardinality = $form['#field']['cardinality'];
   }
 
-  // Decide wheter or not to show the plural field.
-  $show_plural = $cardinality > 1 || $cardinality == FIELD_CARDINALITY_UNLIMITED;
+  // Decide whether or not to show the singular field.
+  $show_numerus = $cardinality > 1 || $cardinality == FIELD_CARDINALITY_UNLIMITED;
 
   // Add the textfield if it should be shown.
   // Also add it for graceful degradation, if it could be shown in the future.
-  if ($show_plural || empty($form['field']['cardinality']['disabled'])) {
-    // Textfield, wrapped in the field_label_numerus_plural div.
-    $form['instance']['field_label_numerus_plural'] = array(
-      '#prefix' => '<div id="field_label_numerus_plural">',
+  if ($show_numerus || empty($form['field']['cardinality']['disabled'])) {
+    // Textfield, wrapped in the field_label_numerus_singular div.
+    $form['instance']['field_label_numerus_singular'] = array(
+      '#prefix' => '<div id="field_label_numerus_singular">',
       '#type' => 'textfield',
-      '#title' => t('Label to use for multiple values'),
+      '#title' => t('Label to use for a single value'),
       '#description' => t('Useful if a field can have one or more values and you want to change the label accordingly.'),
       '#weight' => -15,
-      '#default_value' => isset($form['#instance']['field_label_numerus_plural']) ? $form['#instance']['field_label_numerus_plural'] : '',
+      '#default_value' => isset($form['#instance']['field_label_numerus_singular']) ? $form['#instance']['field_label_numerus_singular'] : '',
       '#suffix' => '</div>',
     );
 
     // Use js-hide to hide it, if it shouldn't be visible.
-    if (!$show_plural) {
-      $form['instance']['field_label_numerus_plural']['#prefix'] = '<div id="field_label_numerus_plural" class="js-hide">';
+    if (!$show_numerus) {
+      $form['instance']['field_label_numerus_singular']['#prefix'] = '<div id="field_label_numerus_singular" class="js-hide">';
     }
 
     // Add an #ajax callback to the cardinality selectbox to dynamically hide
-    // and show the plural textfield.
+    // and show the singular textfield.
     $form['field']['cardinality']['#ajax'] = array(
       'callback' => 'field_label_numerus_cardinality_callback',
-      'wrapper' => 'field_label_numerus_plural',
+      'wrapper' => 'field_label_numerus_singular',
     );
   }
 }
@@ -53,15 +53,15 @@ function field_label_numerus_form_field_ui_field_edit_form_alter(&$form, $form_s
 /**
  * FAPI #ajax callback.
  *
- * Returns a fresh field_label_numerus_plural, hidden or shown, depending on
+ * Returns a fresh field_label_numerus_singular, hidden or shown, depending on
  * the selected cardinality.
  */
 function field_label_numerus_cardinality_callback($form, $form_state) {
-  if (isset($form['instance']['field_label_numerus_plural'])) {
-    return $form['instance']['field_label_numerus_plural'];
+  if (isset($form['instance']['field_label_numerus_singular'])) {
+    return $form['instance']['field_label_numerus_singular'];
   } else {
     return array(
-      '#markup' => '<div id="field_label_numerus_plural"></div>',
+      '#markup' => '<div id="field_label_numerus_singular"></div>',
     );
   }
 }
@@ -72,12 +72,11 @@ function field_label_numerus_cardinality_callback($form, $form_state) {
  * Implements hook_preprocess_field().
  */
 function field_label_numerus_preprocess_field(&$vars) {
-  $count = count($vars['items']);
-  if ($count == 0 || $count > 1) {
+  if (count($vars['items']) === 1) {
     $instance = field_info_instance($vars['element']['#entity_type'], $vars['element']['#field_name'], $vars['element']['#bundle']);
-    if (isset($instance['field_label_numerus_plural']) && trim($instance['field_label_numerus_plural']) != '') {
-      $vars['label'] = check_plain($instance['field_label_numerus_plural']);
-      $vars['element']['#title'] = $instance['field_label_numerus_plural'];
+    if (isset($instance['field_label_numerus_singular']) && trim($instance['field_label_numerus_singular']) != '') {
+      $vars['label'] = check_plain($instance['field_label_numerus_singular']);
+      $vars['element']['#title'] = $instance['field_label_numerus_singular'];
     }
   }
 }
