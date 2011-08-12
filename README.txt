@@ -1,0 +1,35 @@
+-- SUMMARY --
+
+Field label numerus allows you to select different field labels for singular
+and plural, depending on the number of field values.
+
+Project page:
+  http://drupal.org/sandbox/niklas/1247590
+
+Issue queue:
+  http://drupal.org/project/issues/1247590
+
+-- REQUIREMENTS --
+
+There are no non-core dependencies. Enable field_ui in the unlikely case that
+it is not already enabled.
+
+-- INSTALLATION --
+
+Install just like any other module:
+  http://drupal.org/documentation/install/modules-themes/modules-7
+
+-- CONFIGURATION --
+
+ * Go to the "Manage fields" page of a content type.
+
+ * Click "edit" on the field you want to configure.
+
+ * If more than one value is allowed for the field, you will see an extra
+   textfield for the plural of the label.
+
+-- CONTACT --
+
+Currently maintained by Niklas Fiekas:
+  http://drupal.org/user/1089248
+  niklas.fiekas@googlemail.com
