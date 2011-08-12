@@ -1,0 +1,77 @@
+<?php
+
+/**
+ * Add a textfield to the field instance settings form.
+ *
+ * Implements hook_form_FORM_ID_alter().
+ */
+function field_label_numerus_form_field_ui_field_edit_form_alter(&$form, $form_state) {
+  // Get the currently selected cardinality.
+  if (isset($form_state['values'])) {
+    $cardinality = $form_state['values']['field']['cardinality'];
+  } else {
+    $cardinality = $form['#field']['cardinality'];
+  }
+
+  // Decide wheter or not to show the plural field.
+  $show_plural = $cardinality > 1 || $cardinality == FIELD_CARDINALITY_UNLIMITED;
+
+  // Add the textfield if it should be shown.
+  // Also add it for graceful degradation, if it could be shown in the future.
+  if ($show_plural || empty($form['field']['cardinality']['disabled'])) {
+    // Textfield, wrapped in the field_label_numerus_plural div.
+    $form['instance']['field_label_numerus_plural'] = array(
+      '#prefix' => '<div id="field_label_numerus_plural">',
+      '#type' => 'textfield',
+      '#title' => t('Label to use for multiple values'),
+      '#description' => t('Useful if a field can have one or more values and you want to change the label accordingly.'),
+      '#weight' => -15,
+      '#default_value' => isset($form['#instance']['field_label_numerus_plural']) ? $form['#instance']['field_label_numerus_plural'] : '',
+      '#suffix' => '</div>',
+    );
+
+    // Use js-hide to hide it, if it shouldn't be visible.
+    if (!$show_plural) {
+      $form['instance']['field_label_numerus_plural']['#prefix'] = '<div id="field_label_numerus_plural" class="js-hide">';
+    }
+
+    // Add an #ajax callback to the cardinality selectbox to dynamically hide
+    // and show the plural textfield.
+    $form['field']['cardinality']['#ajax'] = array(
+      'callback' => 'field_label_numerus_cardinality_callback',
+      'wrapper' => 'field_label_numerus_plural',
+    );
+  }
+}
+
+/**
+ * FAPI #ajax callback.
+ *
+ * Returns a fresh field_label_numerus_plural, hidden or shown, depending on
+ * the selected cardinality.
+ */
+function field_label_numerus_cardinality_callback($form, $form_state) {
+  if (isset($form['instance']['field_label_numerus_plural'])) {
+    return $form['instance']['field_label_numerus_plural'];
+  } else {
+    return array(
+      '#markup' => '<div id="field_label_numerus_plural"></div>',
+    );
+  }
+}
+
+/**
+ * Alter the label before displaying it.
+ *
+ * Implements hook_preprocess_field().
+ */
+function field_label_numerus_preprocess_field(&$vars) {
+  $count = count($vars['items']);
+  if ($count == 0 || $count > 1) {
+    $instance = field_info_instance($vars['element']['#entity_type'], $vars['element']['#field_name'], $vars['element']['#bundle']);
+    if (isset($instance['field_label_numerus_plural']) && trim($instance['field_label_numerus_plural']) != '') {
+      $vars['label'] = check_plain($instance['field_label_numerus_plural']);
+      $vars['element']['#title'] = $instance['field_label_numerus_plural'];
+    }
+  }
+}
