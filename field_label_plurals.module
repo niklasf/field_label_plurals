@@ -7,6 +7,18 @@
  */
 
 /**
+ * Implements hook_help().
+ */
+function field_label_plurals_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#field_label_plurals':
+      $output = '<h3>' . t('Field label plurals') . '</h3>';
+      $output .= '<p>' . t('Some fields can have multiple values. See the "Number of values" setting when editing a field. If that is set, then the <em>Field label plurals</em> module shows a "Label to use for a single value" setting right below the "Label" textfield.') . '</p>';
+      return $output;
+  }
+}
+
+/**
  * Add a textfield to the field instance settings form.
  *
  * Implements hook_form_FORM_ID_alter().
