@@ -1,25 +1,23 @@
--- SUMMARY --
+Field label plurals
+-------------------
 
 Field label plurals allows you to select different field labels for singular
 and plural, depending on the number of field values.
 
 Project page:
-  http://drupal.org/sandbox/niklas/1247590
 
-Issue queue:
-  http://drupal.org/project/issues/1247590
+  http://drupal.org/project/field_label_plurals
 
--- REQUIREMENTS --
+Installation
+------------
 
-There are no non-core dependencies. Enable field_ui in the unlikely case that
-it is not already enabled.
+Field label plurals has no special requirements, install just like any other
+module:
 
--- INSTALLATION --
-
-Install just like any other module:
   http://drupal.org/documentation/install/modules-themes/modules-7
 
--- CONFIGURATION --
+Example
+-------
 
  * Go to the "Manage fields" page of a content type.
 
@@ -28,8 +26,9 @@ Install just like any other module:
  * If more than one value is allowed for the field, you will see an extra
    textfield for the plural of the label.
 
--- CONTACT --
+Maintainers
+-----------
 
-Currently maintained by Niklas Fiekas:
-  http://drupal.org/user/1089248
-  niklas.fiekas@googlemail.com
+ * Niklas Fiekas
+   http://drupal.org/user/1089248
+   niklas.fiekas@googlemail.com
