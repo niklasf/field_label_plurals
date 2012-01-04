@@ -1,0 +1,5 @@
+name = Field label plurals
+package = Fields
+description = Allows you to set a singular and a plural for field labels.
+core = 7.x
+dependencies[] = field_ui

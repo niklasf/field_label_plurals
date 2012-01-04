@@ -1,5 +1,0 @@
-name = Field label numerus
-package = Fields
-description = Allows you to set singular and plural for field labels
-core = 7.x
-dependencies[] = field_ui

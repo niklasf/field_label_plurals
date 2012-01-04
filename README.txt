@@ -1,6 +1,6 @@
 -- SUMMARY --
 
-Field label numerus allows you to select different field labels for singular
+Field label plurals allows you to select different field labels for singular
 and plural, depending on the number of field values.
 
 Project page:
