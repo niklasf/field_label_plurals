@@ -19,17 +19,13 @@ function field_label_plurals_help($path, $arg) {
 }
 
 /**
- * Add a textfield to the field instance settings form.
+ * Implements hook_form_FORM_ID_alter() for field_ui_field_edit_form().
  *
- * Implements hook_form_FORM_ID_alter().
+ * Add a textfield to the field instance settings form.
  */
-function field_label_plurals_form_field_ui_field_edit_form_alter(&$form, $form_state) {
+function field_label_plurals_form_field_ui_field_edit_form_alter(&$form, &$form_state, $form_id) {
   // Get the currently selected cardinality.
-  if (isset($form_state['values'])) {
-    $cardinality = $form_state['values']['field']['cardinality'];
-  } else {
-    $cardinality = $form['#field']['cardinality'];
-  }
+  $cardinality = isset($form_state['values']) ? $form_state['values']['field']['cardinality'] : $form['#field']['cardinality'];
 
   // Decide whether or not to show the singular field.
   $show_singular = $cardinality > 1 || $cardinality == FIELD_CARDINALITY_UNLIMITED;
@@ -39,18 +35,18 @@ function field_label_plurals_form_field_ui_field_edit_form_alter(&$form, $form_s
   if ($show_singular || empty($form['field']['cardinality']['disabled'])) {
     // Textfield, wrapped in the field_label_plurals_singular div.
     $form['instance']['field_label_plurals_singular'] = array(
-      '#prefix' => '<div id="field_label_plurals_singular">',
+      '#prefix' => '<div id="field-label-plurals-singular">',
+      '#suffix' => '</div>',
       '#type' => 'textfield',
       '#title' => t('Label to use for a single value'),
       '#description' => t('Useful if a field can have one or more values and you want to change the label accordingly.'),
       '#weight' => -15,
       '#default_value' => isset($form['#instance']['field_label_plurals_singular']) ? $form['#instance']['field_label_plurals_singular'] : '',
-      '#suffix' => '</div>',
     );
 
     // Use js-hide to hide it, if it shouldn't be visible.
     if (!$show_singular) {
-      $form['instance']['field_label_plurals_singular']['#prefix'] = '<div id="field_label_plurals_singular" class="js-hide">';
+      $form['instance']['field_label_plurals_singular']['#prefix'] = '<div id="field-label-plurals-singular" class="js-hide">';
     }
 
     // Add an #ajax callback to the cardinality selectbox to dynamically hide
@@ -63,7 +59,7 @@ function field_label_plurals_form_field_ui_field_edit_form_alter(&$form, $form_s
 }
 
 /**
- * FAPI #ajax callback.
+ * Form API #ajax callback.
  *
  * Returns a fresh field_label_plurals_singular, hidden or shown, depending on
  * the selected cardinality.
@@ -71,24 +67,25 @@ function field_label_plurals_form_field_ui_field_edit_form_alter(&$form, $form_s
 function field_label_plurals_cardinality_callback($form, $form_state) {
   if (isset($form['instance']['field_label_plurals_singular'])) {
     return $form['instance']['field_label_plurals_singular'];
-  } else {
-    return array(
-      '#markup' => '<div id="field_label_plurals_singular"></div>',
-    );
   }
+
+  return array(
+    '#markup' => '<div id="field-label-plurals-singular"></div>',
+  );
 }
 
 /**
- * Alter the label before displaying it.
+ * Implements hook_preprocess_HOOK() for theme_field().
  *
- * Implements hook_preprocess_field().
+ * Alter the label before displaying it.
  */
-function field_label_plurals_preprocess_field(&$vars) {
-  if (count($vars['items']) === 1) {
-    $instance = field_info_instance($vars['element']['#entity_type'], $vars['element']['#field_name'], $vars['element']['#bundle']);
+function field_label_plurals_preprocess_field(&$variables) {
+  $element = &$variables['element'];
+  if (count($variables['items']) === 1) {
+    $instance = field_info_instance($element['#entity_type'], $element['#field_name'], $element['#bundle']);
     if (isset($instance['field_label_plurals_singular']) && trim($instance['field_label_plurals_singular']) != '') {
-      $vars['label'] = check_plain($instance['field_label_plurals_singular']);
-      $vars['element']['#title'] = $instance['field_label_plurals_singular'];
+      $variables['label'] = check_plain($instance['field_label_plurals_singular']);
+      $element['#title'] = $instance['field_label_plurals_singular'];
     }
   }
 }
